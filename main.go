@@ -27,6 +27,11 @@ const (
 	EndOfLine
 )
 
+const (
+	MAX_IDENTIFIER_LENGTH = 25
+	MAX_INT_LENGTH        = 10
+)
+
 type Token struct {
 	Type  TokenType
 	Value string
@@ -194,8 +199,11 @@ func lex(input string) ([]Token, error) {
 			tokens = append(tokens, Token{Type: RightCurlyBracket, Value: "}"})
 		case isAlpha(c) || isUnderscore(c): // Identifier
 			start := i
-			for withinRange(input, i) && i-start < 25 && (isAlpha(input[i]) || isDigit(input[i]) || isUnderscore(input[i])) {
+			for withinRange(input, i) && (isAlpha(input[i]) || isDigit(input[i]) || isUnderscore(input[i])) {
 				i++
+			}
+			if (i - start) > MAX_IDENTIFIER_LENGTH {
+				return nil, lexicalError("identifier too long", line)
 			}
 			i-- // go back one step to offset the for loop
 			slice := input[start : i+1]
@@ -209,7 +217,7 @@ func lex(input string) ([]Token, error) {
 			for withinRange(input, i) && isDigit(input[i]) {
 				i++
 			}
-			if i-start > 10 {
+			if i-start > MAX_INT_LENGTH {
 				return nil, lexicalError("int constant too long", line)
 			}
 			tokens = append(tokens, Token{Type: IntConstant, Value: input[start:i]})
@@ -237,7 +245,7 @@ func lex(input string) ([]Token, error) {
 }
 
 func main() {
-	input := "const int number=number_1+\"dsa\"+number_2;//comment\na=123sad; a<=b;/*sadghaskjh\ndgasjkhdgsa\n\n*/;;;char c//dsadasghjd\n /*\n\n\n\n\ndasdsad"
+	input := "const int number=asdfgasdfgasdfgasdfgasdfgasdfg+\"dsa\"+number_2;//comment\na=123sad; a<=b;/*sadghaskjh\ndgasjkhdgsa\n\n*/;;;char c//dsadasghjd\n /*\n\n\n\n\ndasdsad*/"
 	lexemes, err := lex(input)
 
 	if err != nil {
