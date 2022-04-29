@@ -3,6 +3,7 @@ package main
 import (
 	"errors"
 	"fmt"
+	"os"
 )
 
 type TokenType int
@@ -26,6 +27,33 @@ const (
 	// End of line
 	EndOfLine
 )
+
+func (t TokenType) String() string {
+	switch t {
+	case Identifier:
+		return "Identifier"
+	case StringConstant:
+		return "StringConstant"
+	case IntConstant:
+		return "IntConstant"
+	case Keyword:
+		return "Keyword"
+	case Operator:
+		return "Operator"
+	case LeftPar:
+		return "LeftPar"
+	case RightPar:
+		return "RightPar"
+	case LeftCurlyBracket:
+		return "LeftCurlyBracket"
+	case RightCurlyBracket:
+		return "RightCurlyBracket"
+	case EndOfLine:
+		return "EndOfLine"
+	default:
+		return "Unknown"
+	}
+}
 
 const (
 	MAX_IDENTIFIER_LENGTH = 25
@@ -56,33 +84,6 @@ func isKeyword(input string) bool {
 		}
 	}
 	return false
-}
-
-func (t TokenType) String() string {
-	switch t {
-	case Identifier:
-		return "Identifier"
-	case StringConstant:
-		return "StringConstant"
-	case IntConstant:
-		return "IntConstant"
-	case Keyword:
-		return "Keyword"
-	case Operator:
-		return "Operator"
-	case LeftPar:
-		return "LeftPar"
-	case RightPar:
-		return "RightPar"
-	case LeftCurlyBracket:
-		return "LeftCurlyBracket"
-	case RightCurlyBracket:
-		return "RightCurlyBracket"
-	case EndOfLine:
-		return "EndOfLine"
-	default:
-		return "Unknown"
-	}
 }
 
 func isDigit(c byte) bool {
@@ -244,15 +245,45 @@ func lex(input string) ([]Token, error) {
 	return tokens, nil
 }
 
+const source_file = "code_file.ceng"
+const output_file = "code.lex"
+
 func main() {
-	input := "const int number=asdfgasdfgasdfgasdfgasdfgasdfg+\"dsa\"+number_2;//comment\na=123sad; a<=b;/*sadghaskjh\ndgasjkhdgsa\n\n*/;;;char c//dsadasghjd\n /*\n\n\n\n\ndasdsad*/"
+	fmt.Println("CENG Lexical Analyzer")
+	fmt.Println("=====================")
+	fmt.Println("Reading source from file", source_file+"...")
+
+	// Read source file
+	dat, err := os.ReadFile(source_file)
+	if err != nil {
+		panic(err)
+	}
+
+	// Tokenize
+	fmt.Println("Lexing source file...")
+	input := string(dat)
 	lexemes, err := lex(input)
 
+	// Write lexemes to file
 	if err != nil {
-		fmt.Println(err)
+		panic(err)
 	} else {
-		for _, lexeme := range lexemes {
-			fmt.Println(lexeme.String())
+		fmt.Println("Writing lexemes to file...")
+		f, e := os.Create(output_file)
+		if err != nil {
+			panic(e)
+		} else {
+			defer f.Close()
+
+			for i, lexeme := range lexemes {
+				buf := lexeme.String()
+				if i != len(lexemes)-1 {
+					buf += "\n"
+				}
+				f.WriteString(buf)
+			}
+
+			fmt.Println("Done!", len(lexemes), "lexemes written to", output_file)
 		}
 	}
 }
