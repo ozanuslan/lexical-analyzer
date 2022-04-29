@@ -135,10 +135,22 @@ func lex(input string) ([]Token, error) {
 				tokens = append(tokens, Token{Type: Operator, Value: "+"})
 			}
 		case c == '-':
-			// handle - and --
+			// handle - and --, also negative integers
 			if withinRange(input, i+1) && input[i+1] == '-' {
 				tokens = append(tokens, Token{Type: Operator, Value: "--"})
 				i++
+			} else if withinRange(input, i+1) && isDigit(input[i+1]) {
+				// handle negative numbers
+				i++
+				start := i
+				for withinRange(input, i) && isDigit(input[i]) {
+					i++
+				}
+				if i-start > MAX_INT_LENGTH {
+					return nil, lexicalError("negative int constant too long", line)
+				}
+				tokens = append(tokens, Token{Type: IntConstant, Value: "-" + input[start:i]})
+				i-- // offset overstepping
 			} else {
 				tokens = append(tokens, Token{Type: Operator, Value: "-"})
 			}
