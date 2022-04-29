@@ -118,7 +118,7 @@ func lex(input string) ([]Token, error) {
 	for i := 0; i < len(input); i++ {
 		c := input[i]
 		switch {
-		case c == ';':
+		case isEndOfLine(c):
 			tokens = append(tokens, Token{Type: EndOfLine})
 		case c == '+':
 			// handle + and ++
@@ -148,10 +148,10 @@ func lex(input string) ([]Token, error) {
 					}
 					i++
 				}
+				i += 1 // skip "*/"
 				if !withinRange(input, i) {
 					return nil, lexicalError("multiline comment not terminated", line)
 				}
-				i += 1 // skip "*/"
 			} else if withinRange(input, i+1) && input[i+1] == '/' { // Single line comment
 				for withinRange(input, i) && !isNewLine(input[i]) {
 					i++
@@ -237,7 +237,7 @@ func lex(input string) ([]Token, error) {
 }
 
 func main() {
-	input := "const int number=number_1+\"dsa\"+number_2;//comment\na=123sad; a<=b;/*sadghaskjh\ndgasjkhdgsa\n\n*/;;;char c"
+	input := "const int number=number_1+\"dsa\"+number_2;//comment\na=123sad; a<=b;/*sadghaskjh\ndgasjkhdgsa\n\n*/;;;char c//dsadasghjd\n /*\n\n\n\n\ndasdsad"
 	lexemes, err := lex(input)
 
 	if err != nil {
