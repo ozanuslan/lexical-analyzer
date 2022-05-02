@@ -308,33 +308,6 @@ class LexemeType {
         return "Unknown";
     }
   }
-
-  public static String typeString(Type t) {
-    switch (t) {
-      case Keyword:
-        return "Keyword";
-      case Identifier:
-        return "Identifier";
-      case IntConstant:
-        return "IntConstant";
-      case StringConstant:
-        return "StringConstant";
-      case Operator:
-        return "Operator";
-      case LeftPar:
-        return "LeftPar";
-      case RightPar:
-        return "RightPar";
-      case LeftCurlyBracket:
-        return "LeftCurlyBracket";
-      case RightCurlyBracket:
-        return "RightCurlyBracket";
-      case EndOfLine:
-        return "EndOfLine";
-      default:
-        return "Unknown";
-    }
-  }
 }
 
 class Lexeme {
