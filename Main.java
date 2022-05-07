@@ -5,7 +5,6 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Arrays;
 
 class Main {
   private static final String source_file = "code_file.ceng";
@@ -87,7 +86,12 @@ class Lexer {
   }
 
   private boolean isKeyword(String s) {
-    return Arrays.stream(KEYWORDS).anyMatch(s::equals);
+    for (String keyword : KEYWORDS) {
+      if (keyword.equals(s)) {
+        return true;
+      }
+    }
+    return false;
   }
 
   private boolean isDigit(char c) {
@@ -104,6 +108,10 @@ class Lexer {
 
   private boolean isStringSymbol(char c) {
     return c == '"';
+  }
+
+  private boolean isNewLine(char c) {
+    return c == '\n';
   }
 
   public List<Lexeme> lex() throws IllegalStateException, LexicalException {
