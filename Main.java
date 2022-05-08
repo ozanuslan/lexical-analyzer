@@ -252,7 +252,11 @@ class Lexer {
             // string
             StringBuilder sb = new StringBuilder();
             while (peekChar() != '"') {
-              sb.append(nextChar());
+              nextChar();
+              if (getChar() == EOF) {
+                throw new LexicalException("unclosed string");
+              }
+              sb.append(getChar());
             }
             tokens.add(new Lexeme(new LexemeType(LexemeType.Type.StringConstant), sb.toString()));
             nextChar();
