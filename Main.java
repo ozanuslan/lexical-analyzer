@@ -52,10 +52,10 @@ class Main {
 }
 
 class Lexer {
-  private final int MAX_IDENTIFIER_LENGTH = 25;
-  private final int MAX_INT_LENGTH = 10;
-  private final char EOF = '\0';
-  private final String[] KEYWORDS = {
+  private static final int MAX_IDENTIFIER_LENGTH = 25;
+  private static final int MAX_INT_LENGTH = 10;
+  private static final char EOF = '\0';
+  private static final String[] KEYWORDS = {
       "break", "case", "char", "const", "do", "else", "enum", "float", "for", "if", "int", "double", "long", "struct",
       "return", "static", "while"
   };
@@ -108,10 +108,6 @@ class Lexer {
 
   private boolean isStringSymbol(char c) {
     return c == '"';
-  }
-
-  private boolean isNewLine(char c) {
-    return c == '\n';
   }
 
   public List<Lexeme> lex() throws IllegalStateException, LexicalException {
@@ -276,7 +272,7 @@ class LexemeType {
     EndOfLine
   }
 
-  Type type;
+  private Type type;
 
   public LexemeType(Type type) {
     this.type = type;
