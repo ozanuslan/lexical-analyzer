@@ -289,9 +289,9 @@ class LexemeType {
       case Identifier:
         return "Identifier";
       case IntConstant:
-        return "IntConstant";
+        return "IntConst";
       case StringConstant:
-        return "StringConstant";
+        return "StringConst";
       case Operator:
         return "Operator";
       case LeftPar:
