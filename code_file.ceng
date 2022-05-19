@@ -1,2 +1,4 @@
-number=number_1+25; /*addition*/ 
-number_1++; /*increment*/
+number=number_1+25; // addition
+number_1++;
+/*increment operation
+xxxxxxxxxxxxxxxxxxx */
