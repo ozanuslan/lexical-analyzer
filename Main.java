@@ -1,3 +1,25 @@
+
+/**
+ * Authors: Ozan Uslan - 2019510078, Oguz Akif Tufekcioglu - 2018510060, Huseyin Saatci - 2018510054
+ * Date: 2022/04/28
+ * 
+ * Project Definition: The Program should accept a source file called
+ * code_file.ceng and produce a text file named as code.lex that contains
+ * all the tokens of the code.lex listed one after the other.
+ * 
+ * Lexical Tokens:
+ * 1 - Identifiers
+ * 2 - String constants
+ * 3 - Integer constants
+ * 4 - Keywords
+ * 5 - Operators
+ * 6 - Brackets
+ * 7 - EndofLine
+ * 
+ * Non-Tokens:
+ * 1 - Comments
+ */
+
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.nio.charset.StandardCharsets;
