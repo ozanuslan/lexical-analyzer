@@ -163,9 +163,6 @@ class Lexer {
               }
             }
             nextChar();
-            if (getChar() == EOF) {
-              throw new LexicalException("unclosed comment");
-            }
           } else {
             tokens.add(new Lexeme(new LexemeType(LexemeType.Type.Operator), "/"));
           }
@@ -239,7 +236,7 @@ class Lexer {
           tokens.add(new Lexeme(new LexemeType(LexemeType.Type.RightCurlyBracket)));
           break;
         default:
-          if (isAlpha(c) || isUnderscore(c)) {
+          if (isAlpha(c)) {
             // identifier or keyword
             StringBuilder sb = new StringBuilder();
             sb.append(c);
