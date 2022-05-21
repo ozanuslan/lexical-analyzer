@@ -141,10 +141,10 @@ class Lexer {
     while (getChar() != EOF) {
       switch (c) {
         case ';':
-          tokens.add(new Lexeme(new LexemeType(LexemeType.Type.EndOfLine)));
+          tokens.add(Lexeme.createLexeme(LexemeType.Type.EndOfLine));
           break;
         case '*':
-          tokens.add(new Lexeme(new LexemeType(LexemeType.Type.Operator), "*"));
+          tokens.add(Lexeme.createLexeme(LexemeType.Type.Operator, "*"));
           break;
         case '/':
           // handle // comment, /* comment */
@@ -164,22 +164,22 @@ class Lexer {
             }
             nextChar();
           } else {
-            tokens.add(new Lexeme(new LexemeType(LexemeType.Type.Operator), "/"));
+            tokens.add(Lexeme.createLexeme(LexemeType.Type.Operator, "/"));
           }
           break;
         case '+':
           // handle + and ++
           if (peekChar() == '+') {
-            tokens.add(new Lexeme(new LexemeType(LexemeType.Type.Operator), "++"));
+            tokens.add(Lexeme.createLexeme(LexemeType.Type.Operator, "++"));
             nextChar();
           } else {
-            tokens.add(new Lexeme(new LexemeType(LexemeType.Type.Operator), "+"));
+            tokens.add(Lexeme.createLexeme(LexemeType.Type.Operator, "+"));
           }
           break;
         case '-':
           // handle -, --, and negative integer values
           if (peekChar() == '-') {
-            tokens.add(new Lexeme(new LexemeType(LexemeType.Type.Operator), "--"));
+            tokens.add(Lexeme.createLexeme(LexemeType.Type.Operator, "--"));
             nextChar();
           } else if (isDigit(peekChar())) {
             StringBuilder sb = new StringBuilder();
@@ -191,49 +191,49 @@ class Lexer {
                 throw new LexicalException("integer too long");
               }
             }
-            tokens.add(new Lexeme(new LexemeType(LexemeType.Type.IntConstant), sb.toString()));
+            tokens.add(Lexeme.createLexeme(LexemeType.Type.IntConstant, sb.toString()));
           } else {
-            tokens.add(new Lexeme(new LexemeType(LexemeType.Type.Operator), "-"));
+            tokens.add(Lexeme.createLexeme(LexemeType.Type.Operator, "-"));
           }
           break;
         case '=':
           // handle = and ==
           if (peekChar() == '=') {
-            tokens.add(new Lexeme(new LexemeType(LexemeType.Type.Operator), "=="));
+            tokens.add(Lexeme.createLexeme(LexemeType.Type.Operator, "=="));
             nextChar();
           } else {
-            tokens.add(new Lexeme(new LexemeType(LexemeType.Type.Operator), "="));
+            tokens.add(Lexeme.createLexeme(LexemeType.Type.Operator, "="));
           }
           break;
         case '<':
           // handle < and <=
           if (peekChar() == '=') {
-            tokens.add(new Lexeme(new LexemeType(LexemeType.Type.Operator), "<="));
+            tokens.add(Lexeme.createLexeme(LexemeType.Type.Operator, "<="));
             nextChar();
           } else {
-            tokens.add(new Lexeme(new LexemeType(LexemeType.Type.Operator), "<"));
+            tokens.add(Lexeme.createLexeme(LexemeType.Type.Operator, "<"));
           }
           break;
         case '>':
           // handle > and >=
           if (peekChar() == '=') {
-            tokens.add(new Lexeme(new LexemeType(LexemeType.Type.Operator), ">="));
+            tokens.add(Lexeme.createLexeme(LexemeType.Type.Operator, ">="));
             nextChar();
           } else {
-            tokens.add(new Lexeme(new LexemeType(LexemeType.Type.Operator), ">"));
+            tokens.add(Lexeme.createLexeme(LexemeType.Type.Operator, ">"));
           }
           break;
         case '(':
-          tokens.add(new Lexeme(new LexemeType(LexemeType.Type.LeftPar)));
+          tokens.add(Lexeme.createLexeme(LexemeType.Type.LeftPar));
           break;
         case ')':
-          tokens.add(new Lexeme(new LexemeType(LexemeType.Type.RightPar)));
+          tokens.add(Lexeme.createLexeme(LexemeType.Type.RightPar));
           break;
         case '{':
-          tokens.add(new Lexeme(new LexemeType(LexemeType.Type.LeftCurlyBracket)));
+          tokens.add(Lexeme.createLexeme(LexemeType.Type.LeftCurlyBracket));
           break;
         case '}':
-          tokens.add(new Lexeme(new LexemeType(LexemeType.Type.RightCurlyBracket)));
+          tokens.add(Lexeme.createLexeme(LexemeType.Type.RightCurlyBracket));
           break;
         default:
           if (isAlpha(c)) {
@@ -248,9 +248,9 @@ class Lexer {
             }
             String identifier = sb.toString();
             if (isKeyword(identifier)) {
-              tokens.add(new Lexeme(new LexemeType(LexemeType.Type.Keyword), identifier));
+              tokens.add(Lexeme.createLexeme(LexemeType.Type.Keyword, identifier));
             } else {
-              tokens.add(new Lexeme(new LexemeType(LexemeType.Type.Identifier), identifier));
+              tokens.add(Lexeme.createLexeme(LexemeType.Type.Identifier, identifier));
             }
           } else if (isDigit(c)) {
             // integer
@@ -262,7 +262,7 @@ class Lexer {
                 throw new LexicalException("integer too long");
               }
             }
-            tokens.add(new Lexeme(new LexemeType(LexemeType.Type.IntConstant), sb.toString()));
+            tokens.add(Lexeme.createLexeme(LexemeType.Type.IntConstant, sb.toString()));
           } else if (isStringSymbol(c)) {
             // string
             StringBuilder sb = new StringBuilder();
@@ -273,7 +273,7 @@ class Lexer {
               }
               sb.append(getChar());
             }
-            tokens.add(new Lexeme(new LexemeType(LexemeType.Type.StringConstant), sb.toString()));
+            tokens.add(Lexeme.createLexeme(LexemeType.Type.StringConstant, sb.toString()));
             nextChar();
           }
           // if none of the above, skip character
@@ -282,6 +282,40 @@ class Lexer {
       c = nextChar();
     }
     return tokens;
+  }
+}
+
+class Lexeme {
+  public LexemeType type;
+  public String value;
+
+  public Lexeme(LexemeType type, String value) {
+    this.type = type;
+    this.value = value;
+  }
+
+  public Lexeme(LexemeType type) {
+    this(type, null);
+  }
+
+  public LexemeType getType() {
+    return type;
+  }
+
+  public String getValue() {
+    return value;
+  }
+
+  public static Lexeme createLexeme(LexemeType.Type type) {
+    return new Lexeme(new LexemeType(type));
+  }
+
+  public static Lexeme createLexeme(LexemeType.Type type, String value) {
+    return new Lexeme(new LexemeType(type), value);
+  }
+
+  public String toString() {
+    return type.toString() + (value != null ? (": " + value) : "");
   }
 }
 
@@ -326,32 +360,6 @@ class LexemeType {
       default:
         return "Unknown";
     }
-  }
-}
-
-class Lexeme {
-  public LexemeType type;
-  public String value;
-
-  public Lexeme(LexemeType type, String value) {
-    this.type = type;
-    this.value = value;
-  }
-
-  public Lexeme(LexemeType type) {
-    this(type, null);
-  }
-
-  public LexemeType getType() {
-    return type;
-  }
-
-  public String getValue() {
-    return value;
-  }
-
-  public String toString() {
-    return type.toString() + (value != null ? (": " + value) : "");
   }
 }
 
