@@ -140,51 +140,48 @@ class Lexer {
     char c = getChar();
     while (getChar() != EOF) {
       switch (c) {
-        case ';':
+        case ';': // end of line
           tokens.add(Lexeme.createLexeme(LexemeType.Type.EndOfLine));
           break;
-        case '*':
+        case '*': // multiplication
           tokens.add(Lexeme.createLexeme(LexemeType.Type.Operator, "*"));
           break;
-        case '/':
-          // handle // comment, /* comment */
-          if (peekChar() == '/') {
-            nextChar();
+        case '/': // handle // comment, /* comment */, and / operator
+          if (peekChar() == '/') { // // comment
+            nextChar(); // consume '//'
             while (getChar() != '\n' && getChar() != EOF) {
               nextChar();
             }
-          } else if (peekChar() == '*') {
-            nextChar();
-            nextChar();
+          } else if (peekChar() == '*') { // /* comment */
+            nextChar(); // consume '*'
+            nextChar(); // advance to first character of comment
             while (!(getChar() == '*' && peekChar() == '/')) {
               nextChar();
               if (getChar() == EOF) {
                 throw new LexicalException("unclosed comment");
               }
             }
-            nextChar();
-          } else {
+            nextChar(); // consume '/'
+          } else { // / operator
             tokens.add(Lexeme.createLexeme(LexemeType.Type.Operator, "/"));
           }
           break;
-        case '+':
-          // handle + and ++
-          if (peekChar() == '+') {
+        case '+': // handle + and ++
+          if (peekChar() == '+') { // ++ operator
             tokens.add(Lexeme.createLexeme(LexemeType.Type.Operator, "++"));
             nextChar();
-          } else {
+          } else { // + operator
             tokens.add(Lexeme.createLexeme(LexemeType.Type.Operator, "+"));
           }
           break;
-        case '-':
-          // handle -, --, and negative integer values
-          if (peekChar() == '-') {
+        case '-': // handle -, --, and negative integers
+          if (peekChar() == '-') { // -- operator
             tokens.add(Lexeme.createLexeme(LexemeType.Type.Operator, "--"));
-            nextChar();
-          } else if (isDigit(peekChar())) {
+            nextChar(); // consume 2nd '-'
+          } else if (isDigit(peekChar())) { // negative integer
             StringBuilder sb = new StringBuilder();
             sb.append('-');
-            sb.append(nextChar());
+            sb.append(nextChar()); // append first digit
             while (isDigit(peekChar())) {
               sb.append(nextChar());
               if (sb.length() - 1 > MAX_INT_LENGTH) {
@@ -192,52 +189,48 @@ class Lexer {
               }
             }
             tokens.add(Lexeme.createLexeme(LexemeType.Type.IntConstant, sb.toString()));
-          } else {
+          } else { // - operator
             tokens.add(Lexeme.createLexeme(LexemeType.Type.Operator, "-"));
           }
           break;
-        case '=':
-          // handle = and ==
-          if (peekChar() == '=') {
+        case '=': // handle = and ==
+          if (peekChar() == '=') { // == operator
             tokens.add(Lexeme.createLexeme(LexemeType.Type.Operator, "=="));
-            nextChar();
-          } else {
+            nextChar(); // consume 2nd '='
+          } else { // = operator
             tokens.add(Lexeme.createLexeme(LexemeType.Type.Operator, "="));
           }
           break;
-        case '<':
-          // handle < and <=
-          if (peekChar() == '=') {
+        case '<': // handle < and <=
+          if (peekChar() == '=') { // <= operator
             tokens.add(Lexeme.createLexeme(LexemeType.Type.Operator, "<="));
-            nextChar();
-          } else {
+            nextChar(); // consume '='
+          } else { // < operator
             tokens.add(Lexeme.createLexeme(LexemeType.Type.Operator, "<"));
           }
           break;
-        case '>':
-          // handle > and >=
-          if (peekChar() == '=') {
+        case '>': // handle > and >=
+          if (peekChar() == '=') { // >= operator
             tokens.add(Lexeme.createLexeme(LexemeType.Type.Operator, ">="));
-            nextChar();
-          } else {
+            nextChar(); // consume '='
+          } else { // > operator
             tokens.add(Lexeme.createLexeme(LexemeType.Type.Operator, ">"));
           }
           break;
-        case '(':
+        case '(': // ( parenthesis
           tokens.add(Lexeme.createLexeme(LexemeType.Type.LeftPar));
           break;
-        case ')':
+        case ')': // ) parenthesis
           tokens.add(Lexeme.createLexeme(LexemeType.Type.RightPar));
           break;
-        case '{':
+        case '{': // { curly bracket
           tokens.add(Lexeme.createLexeme(LexemeType.Type.LeftCurlyBracket));
           break;
-        case '}':
+        case '}': // } curly bracket
           tokens.add(Lexeme.createLexeme(LexemeType.Type.RightCurlyBracket));
           break;
         default:
-          if (isAlpha(c)) {
-            // identifier or keyword
+          if (isAlpha(c)) { // identifier or keyword
             StringBuilder sb = new StringBuilder();
             sb.append(c);
             while (isAlpha(peekChar()) || isDigit(peekChar()) || isUnderscore(peekChar())) {
@@ -247,13 +240,12 @@ class Lexer {
               }
             }
             String identifier = sb.toString();
-            if (isKeyword(identifier)) {
+            if (isKeyword(identifier)) { // keyword
               tokens.add(Lexeme.createLexeme(LexemeType.Type.Keyword, identifier));
-            } else {
+            } else { // identifier
               tokens.add(Lexeme.createLexeme(LexemeType.Type.Identifier, identifier));
             }
-          } else if (isDigit(c)) {
-            // integer
+          } else if (isDigit(c)) { // positive integer
             StringBuilder sb = new StringBuilder();
             sb.append(c);
             while (isDigit(peekChar())) {
@@ -263,8 +255,7 @@ class Lexer {
               }
             }
             tokens.add(Lexeme.createLexeme(LexemeType.Type.IntConstant, sb.toString()));
-          } else if (isStringSymbol(c)) {
-            // string
+          } else if (isStringSymbol(c)) { // string
             StringBuilder sb = new StringBuilder();
             while (peekChar() != '"') {
               nextChar();
@@ -274,12 +265,12 @@ class Lexer {
               sb.append(getChar());
             }
             tokens.add(Lexeme.createLexeme(LexemeType.Type.StringConstant, sb.toString()));
-            nextChar();
+            nextChar(); // consume the closing "
           }
           // if none of the above, skip character
           break;
       }
-      c = nextChar();
+      c = nextChar(); // get next character
     }
     return tokens;
   }
